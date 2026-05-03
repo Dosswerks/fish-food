@@ -1,0 +1,72 @@
+{
+  "levelIndex": 4,
+  "tankTheme": "ocean_approach",
+  "narrativeDescription": "A tidal pool near the shore. The ocean is just one leap away!",
+  "tankDimensions": { "width": 1280, "height": 720 },
+  "entranceZone": { "x": 0, "y": 40, "w": 80, "h": 80 },
+  "exitZone": { "x": 1200, "y": 40, "w": 80, "h": 80 },
+  "exitEnergyThreshold": 45,
+  "exitMomentumThreshold": 2.2,
+  "playerStartPosition": { "x": 40, "y": 80 },
+  "startingEnergy": 40,
+  "foodSpawnRate": 2.0,
+  "foodEnergyValue": 10,
+  "rottenFoodPenalty": 8,
+  "maxFoodSpawnInterval": 4.5,
+  "predators": [
+    {
+      "type": "chase",
+      "patrolPath": [{ "x": 400, "y": 300 }, { "x": 700, "y": 300 }],
+      "speed": 1.5,
+      "detectionRadius": 200,
+      "triggerRadius": 0
+    },
+    {
+      "type": "ambush",
+      "patrolPath": [{ "x": 900, "y": 550 }],
+      "speed": 2.0,
+      "detectionRadius": 0,
+      "triggerRadius": 120
+    },
+    {
+      "type": "patrol",
+      "patrolPath": [{ "x": 150, "y": 550 }, { "x": 550, "y": 550 }],
+      "speed": 1.6,
+      "detectionRadius": 0,
+      "triggerRadius": 0
+    }
+  ],
+  "pumps": [
+    {
+      "position": { "x": 640, "y": 650 },
+      "direction": { "x": 0.7, "y": -0.5 },
+      "strength": 0.7,
+      "areaOfEffect": { "x": 500, "y": 550, "w": 300, "h": 150 }
+    },
+    {
+      "position": { "x": 200, "y": 200 },
+      "direction": { "x": 1, "y": 0 },
+      "strength": 0.4,
+      "areaOfEffect": { "x": 100, "y": 150, "w": 250, "h": 100 }
+    }
+  ],
+  "hazards": [
+    {
+      "type": "rock",
+      "position": { "x": 600, "y": 400 },
+      "dimensions": { "w": 70, "h": 70 }
+    },
+    {
+      "type": "suction",
+      "position": { "x": 350, "y": 600 },
+      "dimensions": { "w": 50, "h": 50 },
+      "suctionRadius": 110,
+      "suctionStrength": 250
+    }
+  ],
+  "bonusPickupSpawnChance": 0.05,
+  "stressEnabled": true,
+  "stressRate": 3.0,
+  "targetSessionLength": 100,
+  "difficultyTier": 5
+}

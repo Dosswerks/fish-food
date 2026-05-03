@@ -1,0 +1,38 @@
+{
+  "levelIndex": 1,
+  "tankTheme": "pet_store_tank",
+  "narrativeDescription": "A display tank in a busy pet store. Watch out for the bigger fish!",
+  "tankDimensions": { "width": 1280, "height": 720 },
+  "entranceZone": { "x": 0, "y": 40, "w": 80, "h": 80 },
+  "exitZone": { "x": 1200, "y": 40, "w": 80, "h": 80 },
+  "exitEnergyThreshold": 30,
+  "exitMomentumThreshold": 1.5,
+  "playerStartPosition": { "x": 40, "y": 80 },
+  "startingEnergy": 50,
+  "foodSpawnRate": 2.5,
+  "foodEnergyValue": 11,
+  "rottenFoodPenalty": 5,
+  "maxFoodSpawnInterval": 6.0,
+  "predators": [
+    {
+      "type": "patrol",
+      "patrolPath": [{ "x": 300, "y": 350 }, { "x": 900, "y": 350 }],
+      "speed": 1.2,
+      "detectionRadius": 0,
+      "triggerRadius": 0
+    }
+  ],
+  "pumps": [],
+  "hazards": [
+    {
+      "type": "rock",
+      "position": { "x": 580, "y": 620 },
+      "dimensions": { "w": 120, "h": 50 }
+    }
+  ],
+  "bonusPickupSpawnChance": 0.02,
+  "stressEnabled": false,
+  "stressRate": 0,
+  "targetSessionLength": 75,
+  "difficultyTier": 2
+}
