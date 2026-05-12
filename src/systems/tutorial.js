@@ -72,17 +72,13 @@ export class TutorialSystem {
   render(ctx, canvasW, canvasH) {
     if (!this._activePrompt) return;
 
-    // Dim background
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-    ctx.fillRect(0, 0, canvasW, canvasH);
-
-    // Prompt box
+    // Prompt box (no background dim — gameplay continues behind)
     const boxW = Math.min(500, canvasW * 0.7);
-    const boxH = 100;
+    const boxH = 80;
     const boxX = (canvasW - boxW) / 2;
-    const boxY = (canvasH - boxH) / 2;
+    const boxY = canvasH - boxH - 40; // bottom of screen, out of the way
 
-    ctx.fillStyle = '#1a3a5c';
+    ctx.fillStyle = 'rgba(26, 58, 92, 0.85)';
     ctx.strokeStyle = '#88ccff';
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -94,12 +90,12 @@ export class TutorialSystem {
     ctx.fillStyle = '#fff';
     ctx.font = '18px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(this._activePrompt.text, canvasW / 2, boxY + 42);
+    ctx.fillText(this._activePrompt.text, canvasW / 2, boxY + 35);
 
     // Dismiss hint
     ctx.fillStyle = '#aaa';
     ctx.font = '13px sans-serif';
-    ctx.fillText('Press any key to continue', canvasW / 2, boxY + 72);
+    ctx.fillText('Press any key to dismiss', canvasW / 2, boxY + 60);
   }
 
   /** Reset all shown state (for new game). */

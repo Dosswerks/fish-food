@@ -5,9 +5,9 @@ export class MomentumSystem {
   constructor(config = {}) {
     this.position = { x: 0, y: 0 };
     this.velocity = { x: 0, y: 0 };
-    this._acceleration = config.acceleration || 600;  // px/s²
+    this._acceleration = config.acceleration || 500;  // px/s²
     this._maxSpeed = config.maxSpeed || 250;           // px/s
-    this._drag = config.drag || 3.0;                   // deceleration factor
+    this._drag = config.drag || 2.0;                   // deceleration factor (lower = smoother glide)
     this._lowEnergyFactor = config.lowEnergyFactor || 0.4;
     this._tightSpaceFactor = config.tightSpaceFactor || 0.5;
     this._horizontalTurnBoost = config.horizontalTurnBoost || 1.8;
