@@ -111,8 +111,12 @@ export class AudioSystem {
   async playMusicFile(url) {
     if (!this._ensureContext()) return;
     this.stopMusic();
+    // Cancellation: each call gets a unique token; if a newer call arrives, the old one won't start playback
+    const token = Symbol();
+    this._musicLoadToken = token;
     try {
       const response = await fetch(url);
+      if (this._musicLoadToken !== token) return; // superseded by newer call
       if (!response.ok) {
         // Fallback to level-01 music
         if (url !== 'src/assets/music/level-01.mp3') {
@@ -123,7 +127,9 @@ export class AudioSystem {
         return;
       }
       const arrayBuffer = await response.arrayBuffer();
+      if (this._musicLoadToken !== token) return; // superseded
       const audioBuffer = await this._ctx.decodeAudioData(arrayBuffer);
+      if (this._musicLoadToken !== token) return; // superseded
       const source = this._ctx.createBufferSource();
       source.buffer = audioBuffer;
       source.loop = true;
@@ -132,6 +138,7 @@ export class AudioSystem {
       this._musicSource = source;
       this._currentMusic = url;
     } catch (e) {
+      if (this._musicLoadToken !== token) return;
       // Fallback to level-01 music
       if (url !== 'src/assets/music/level-01.mp3') {
         console.warn(`AudioSystem: failed to play ${url}, falling back to level-01`);
@@ -168,6 +175,7 @@ export class AudioSystem {
 
   /** Stop current music. */
   stopMusic() {
+    this._musicLoadToken = null; // cancel any in-flight load
     if (this._musicSource) {
       try {
         this._musicSource.stop();
