@@ -104,6 +104,33 @@ export class AudioSystem {
   }
 
   /**
+   * Play a music file from a URL path (looped).
+   * @param {string} url - Path to the audio file
+   */
+  async playMusicFile(url) {
+    if (!this._ensureContext()) return;
+    this.stopMusic();
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        console.warn(`AudioSystem: music file not found: ${url}`);
+        return;
+      }
+      const arrayBuffer = await response.arrayBuffer();
+      const audioBuffer = await this._ctx.decodeAudioData(arrayBuffer);
+      const source = this._ctx.createBufferSource();
+      source.buffer = audioBuffer;
+      source.loop = true;
+      source.connect(this._musicGain);
+      source.start(0);
+      this._musicSource = source;
+      this._currentMusic = url;
+    } catch (e) {
+      console.warn(`AudioSystem: failed to play music file ${url}`, e);
+    }
+  }
+
+  /**
    * Play a procedural music loop (placeholder until real music assets).
    * Generates a simple ambient pad.
    * @param {string} theme - Tank theme identifier (unused for now)
@@ -130,6 +157,12 @@ export class AudioSystem {
 
   /** Stop current music. */
   stopMusic() {
+    if (this._musicSource) {
+      try {
+        this._musicSource.stop();
+      } catch (e) { /* already stopped */ }
+      this._musicSource = null;
+    }
     if (this._musicOscillators) {
       const now = this._ctx?.currentTime || 0;
       for (const { osc, gain } of this._musicOscillators) {
