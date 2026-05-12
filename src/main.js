@@ -160,13 +160,20 @@ async function loadLevel(index) {
     gs.previousStressTier = 'low';
     gs.showingNarrative = false;
     gs.narrativeTimer = 0;
-    gs.droppingIn = true;
+    gs.droppingIn = false; // starts after announcement
     gs.dropVelocity = 0;
     gs.dropElapsed = 0;
 
+    // Level announcement phase
+    gs.levelAnnouncement = true;
+    gs.levelAnnouncementTimer = 2.0;
+
     stateManager.loadLevel(index);
     analytics.levelStart(index);
-    // Music will start during the drop-in phase if config.musicFile is set
+
+    // Start music for this level (fallback to level-01 if file missing)
+    const musicPath = config.musicFile || 'src/assets/music/level-01.mp3';
+    audio.playMusicFile(musicPath);
   } catch (err) {
     console.error('Failed to load level:', err);
     stateManager.transition(States.MAIN_MENU);
@@ -333,9 +340,12 @@ function update(dt) {
     return;
   }
 
-  // ── Progress Map ──
+  // ── Progress Map (auto-advance after 3 seconds) ──
   if (state === States.PROGRESS_MAP) {
-    if (input.isAnyPressed()) {
+    if (gs._progressMapTimer === undefined) gs._progressMapTimer = 3.0;
+    gs._progressMapTimer -= dt;
+    if (gs._progressMapTimer <= 0) {
+      gs._progressMapTimer = undefined;
       const nextLevel = stateManager.getCurrentLevelIndex() + 1;
       if (nextLevel < LEVEL_PATHS.length) {
         loadLevel(nextLevel);
@@ -355,6 +365,49 @@ function update(dt) {
     return;
   }
 
+  // ── Level Announcement phase ("Tank X" for 2 seconds) ──
+  if (gs.levelAnnouncement) {
+    gs.levelAnnouncementTimer -= dt;
+
+    // Update moving elements during announcement (predators, food spawning)
+    const config = gs.levelConfig;
+    if (config) {
+      gs.foodSpawnTimer += dt;
+      if (gs.foodSpawnTimer >= config.foodSpawnRate) {
+        gs.foodSpawnTimer = 0;
+        spawnFood();
+      }
+      // Update food pellets falling
+      for (let i = gs.foodPellets.length - 1; i >= 0; i--) {
+        const f = gs.foodPellets[i];
+        if (!f.active) { gs.foodPellets.splice(i, 1); continue; }
+        if (!f.isRotten) {
+          f.position.y += f.fallSpeed * dt;
+          f.boundingBox.x = f.position.x;
+          f.boundingBox.y = f.position.y;
+          if (f.position.y + 12 >= config.tankDimensions.height) {
+            f.position.y = config.tankDimensions.height - 12;
+            f.isRotten = true;
+            f.collisionType = 'rottenFood';
+          }
+        }
+      }
+      // Update predators
+      const dummyCenter = { x: -999, y: -999 }; // player not in tank yet
+      for (const pred of gs.predators) {
+        pred.update(dt, dummyCenter, config.exitZone);
+      }
+    }
+
+    if (gs.levelAnnouncementTimer <= 0) {
+      gs.levelAnnouncement = false;
+      gs.droppingIn = true;
+      gs.dropElapsed = 0;
+    }
+    input.flush();
+    return;
+  }
+
   // ── Drop-in phase ──
   if (gs.droppingIn) {
     const config = gs.levelConfig;
@@ -367,10 +420,6 @@ function update(dt) {
       if (gs.dropElapsed <= dt * 2) {
         audio.playTone(180, 0.25, 'triangle'); // splash thud
         setTimeout(() => audio.playTone(400, 0.1, 'sine'), 50); // splash sparkle
-        // Also play the level's music file if configured
-        if (config.musicFile) {
-          audio.playMusicFile(config.musicFile);
-        }
       }
 
       // Curved arc: accelerate downward and drift rightward
@@ -1079,6 +1128,19 @@ function render(alpha) {
       tutorial.render(ctx, cw, ch);
     }
 
+    // Level announcement overlay ("Tank X")
+    if (gs.levelAnnouncement) {
+      const annoAlpha = Math.min(1.0, gs.levelAnnouncementTimer / 0.3); // fade out in last 0.3s
+      ctx.fillStyle = `rgba(0, 0, 0, ${0.5 * annoAlpha})`;
+      ctx.fillRect(0, 0, cw, ch);
+      ctx.globalAlpha = annoAlpha;
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 48px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`Tank ${stateManager.getCurrentLevelIndex() + 1}`, cw / 2, ch / 2);
+      ctx.globalAlpha = 1.0;
+    }
+
     // Active bonus indicator
     if (gs.activeEffects.speedBoost > 0) {
       ctx.fillStyle = '#ff00ff';
@@ -1131,6 +1193,9 @@ stateManager.onTransition((oldState, newState) => {
   if (newState === States.PAUSED) { audio.duckMusic(); }
   if (oldState === States.PAUSED && newState === States.PLAYING) { audio.unduckMusic(); }
   if (newState === States.MAIN_MENU) audio.stopMusic();
+  if (newState === States.GAME_OVER) audio.stopMusic();
+  // Reset progress map timer when entering progress map
+  if (newState === States.PROGRESS_MAP) { gs._progressMapTimer = 3.0; }
 });
 
 // ── Wrapped update with pause handling ─────────────────────
