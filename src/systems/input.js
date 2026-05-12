@@ -21,6 +21,10 @@ export class InputSystem {
     this._touchTapped = false;
     this._touchDeadzone = 15; // px
 
+    // Mouse click state (for menu interaction)
+    this._mouseClicked = false;
+    this._mouseClickPos = { x: 0, y: 0 };
+
     // Keyboard
     this._onKeyDown = (e) => {
       if (!this._enabled) return;
@@ -67,11 +71,19 @@ export class InputSystem {
       this._touchDir = { x: 0, y: 0 };
     };
 
+    // Mouse click
+    this._onMouseClick = (e) => {
+      if (!this._enabled) return;
+      this._mouseClicked = true;
+      this._mouseClickPos = { x: e.clientX, y: e.clientY };
+    };
+
     window.addEventListener('keydown', this._onKeyDown);
     window.addEventListener('keyup', this._onKeyUp);
     window.addEventListener('touchstart', this._onTouchStart, { passive: false });
     window.addEventListener('touchmove', this._onTouchMove, { passive: false });
     window.addEventListener('touchend', this._onTouchEnd, { passive: false });
+    window.addEventListener('click', this._onMouseClick);
   }
 
   /** Poll current input state. Returns normalized direction vector. */
@@ -108,12 +120,12 @@ export class InputSystem {
 
   /** Check if confirm was pressed this frame. */
   isConfirmPressed() {
-    return !!(this._justPressed['Space'] || this._justPressed['Enter'] || this._touchTapped);
+    return !!(this._justPressed['Space'] || this._justPressed['Enter'] || this._touchTapped || this._mouseClicked);
   }
 
   /** Check if any key was pressed this frame. */
   isAnyPressed() {
-    return Object.keys(this._justPressed).length > 0 || this._touchTapped;
+    return Object.keys(this._justPressed).length > 0 || this._touchTapped || this._mouseClicked;
   }
 
   /** Set input mode: 'hold' | 'toggle'. */
@@ -125,10 +137,16 @@ export class InputSystem {
   /** Enable/disable input processing. */
   setEnabled(enabled) { this._enabled = enabled; }
 
+  /** Get the last mouse click position (screen coordinates). */
+  getMouseClickPos() {
+    return this._mouseClicked ? { ...this._mouseClickPos } : null;
+  }
+
   /** Clear per-frame state. Call at end of each tick. */
   flush() {
     this._justPressed = {};
     this._touchTapped = false;
+    this._mouseClicked = false;
     // Prune old buffer entries
     const now = performance.now();
     this._buffer = this._buffer.filter(b => now - b.time < this._bufferWindow);
@@ -141,5 +159,6 @@ export class InputSystem {
     window.removeEventListener('touchstart', this._onTouchStart);
     window.removeEventListener('touchmove', this._onTouchMove);
     window.removeEventListener('touchend', this._onTouchEnd);
+    window.removeEventListener('click', this._onMouseClick);
   }
 }
