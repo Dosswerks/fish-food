@@ -969,19 +969,21 @@ function render(alpha) {
       ctx.fillText(`Total Stars: ${totalStars} / ${maxStars}`, sw / 2, 65);
     }
 
-    // World-grouped level grid
-    let worldY = 80;
-    for (const world of WORLDS) {
-      // World label
-      ctx.fillStyle = '#88ccff';
-      ctx.font = 'bold 16px sans-serif';
-      ctx.textAlign = 'left';
-      ctx.fillText(world.name, 30, worldY + 14);
+    // World-grouped level grid (centered, no world names, hide bonus level)
+    const visibleWorlds = WORLDS.slice(0, -1); // hide the bonus world
+    const boxSize = 50;
+    const boxGap = 12;
+    const totalWorldRows = visibleWorlds.length;
+    const maxTanksPerRow = Math.max(...visibleWorlds.map(w => w.tanks.length));
+    const gridWidth = maxTanksPerRow * (boxSize + boxGap) - boxGap;
+    const gridHeight = totalWorldRows * (boxSize + 20) - 20;
+    const gridStartY = (sh - gridHeight) / 2 + 10;
 
-      // Tank boxes for this world
-      const boxSize = 50;
-      const boxGap = 12;
-      const startX = 220;
+    let worldY = gridStartY;
+    for (const world of visibleWorlds) {
+      // Tank boxes for this world (centered horizontally)
+      const rowWidth = world.tanks.length * (boxSize + boxGap) - boxGap;
+      const startX = (sw - rowWidth) / 2;
       for (let t = 0; t < world.tanks.length; t++) {
         const tankIdx = world.tanks[t];
         const x = startX + t * (boxSize + boxGap);
