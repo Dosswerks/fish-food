@@ -220,8 +220,9 @@ function update(dt) {
         stateManager.transition(States.MAIN_MENU);
       } else {
         const lvl = saveData ? saveData.currentLevel : 0;
-        loadLevel(lvl);
-        stateManager.transition(States.PLAYING);
+        loadLevel(lvl).then(() => {
+          stateManager.transition(States.PLAYING);
+        });
       }
     }
     input.flush();
@@ -274,9 +275,10 @@ function update(dt) {
       if (dir.x > 0.5) gs.levelSelectIndex = Math.min(LEVEL_PATHS.length - 1, gs.levelSelectIndex + 1);
       if (dir.x < -0.5) gs.levelSelectIndex = Math.max(0, gs.levelSelectIndex - 1);
       if (input.isConfirmPressed() && completed.includes(gs.levelSelectIndex)) {
-        loadLevel(gs.levelSelectIndex);
-        gs.levelSelectActive = false;
-        stateManager.transition(States.PLAYING);
+        loadLevel(gs.levelSelectIndex).then(() => {
+          gs.levelSelectActive = false;
+          stateManager.transition(States.PLAYING);
+        });
       }
       if (input.isPausePressed()) gs.levelSelectActive = false;
       input.flush();
@@ -333,8 +335,9 @@ function update(dt) {
   // ── Game Over ──
   if (state === States.GAME_OVER) {
     if (input.isConfirmPressed()) {
-      loadLevel(stateManager.getCurrentLevelIndex());
-      stateManager.transition(States.PLAYING);
+      loadLevel(stateManager.getCurrentLevelIndex()).then(() => {
+        stateManager.transition(States.PLAYING);
+      });
     }
     input.flush();
     return;
@@ -348,8 +351,9 @@ function update(dt) {
       gs._progressMapTimer = undefined;
       const nextLevel = stateManager.getCurrentLevelIndex() + 1;
       if (nextLevel < LEVEL_PATHS.length) {
-        loadLevel(nextLevel);
-        stateManager.transition(States.PLAYING);
+        loadLevel(nextLevel).then(() => {
+          stateManager.transition(States.PLAYING);
+        });
       } else {
         // All levels done — ending cutscene
         cutscene.start('ending');
@@ -1206,8 +1210,9 @@ function wrappedUpdate(dt) {
     if (input.isPausePressed()) {
       stateManager.transition(States.PLAYING);
     } else if (input._justPressed['KeyR']) {
-      loadLevel(stateManager.getCurrentLevelIndex());
-      stateManager.transition(States.PLAYING);
+      loadLevel(stateManager.getCurrentLevelIndex()).then(() => {
+        stateManager.transition(States.PLAYING);
+      });
     } else if (input._justPressed['KeyS']) {
       stateManager.transition(States.SETTINGS, { from: 'paused' });
     } else if (input._justPressed['KeyQ']) {
