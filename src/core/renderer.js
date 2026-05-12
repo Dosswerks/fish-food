@@ -4,11 +4,24 @@
  */
 
 const THEME_COLORS = {
-  kitchen_tank:    { water: '#1a3a5c', border: '#88aacc', gravel: '#8a7a5a', plant: '#2a6a3a' },
-  pet_store_tank:  { water: '#1a4a6c', border: '#99bbdd', gravel: '#7a8a6a', plant: '#3a7a4a' },
-  lab_tank:        { water: '#1a2a4c', border: '#6688aa', gravel: '#5a6a7a', plant: '#2a5a5a' },
-  outdoor_pond:    { water: '#1a4a4c', border: '#6aaa8a', gravel: '#6a7a5a', plant: '#3a8a3a' },
-  ocean_approach:  { water: '#0a3a6c', border: '#4488bb', gravel: '#5a7a8a', plant: '#2a7a6a' },
+  // World 1: Fresh Water
+  freshwater_1:    { water: '#1a3a5c', border: '#88aacc', gravel: '#8a7a5a', plant: '#2a6a3a' },
+  freshwater_2:    { water: '#1a4060', border: '#7799bb', gravel: '#7a6a4a', plant: '#3a7a4a' },
+  freshwater_3:    { water: '#1a3555', border: '#6688aa', gravel: '#8a8a5a', plant: '#2a5a2a' },
+  // World 2: Salt Water
+  saltwater_1:     { water: '#0a3a6c', border: '#4488bb', gravel: '#5a7a8a', plant: '#2a7a6a' },
+  saltwater_2:     { water: '#0a3060', border: '#5599cc', gravel: '#6a8a7a', plant: '#3a8a7a' },
+  saltwater_3:     { water: '#0a2a5a', border: '#3377aa', gravel: '#4a6a7a', plant: '#2a6a5a' },
+  // World 3: Neglected Tanks
+  neglected_1:     { water: '#2a3a2a', border: '#556644', gravel: '#4a4a3a', plant: '#3a5a2a' },
+  neglected_2:     { water: '#2a3520', border: '#4a5533', gravel: '#3a3a2a', plant: '#4a6a3a' },
+  neglected_3:     { water: '#1a2a1a', border: '#3a4422', gravel: '#3a3a3a', plant: '#2a4a1a' },
+  // World 4: Pet Store Tanks
+  petstore_1:      { water: '#1a4a6c', border: '#99bbdd', gravel: '#7a8a6a', plant: '#3a7a4a' },
+  petstore_2:      { water: '#1a3a5a', border: '#88aacc', gravel: '#6a7a5a', plant: '#4a8a5a' },
+  petstore_3:      { water: '#1a4060', border: '#77aacc', gravel: '#7a7a6a', plant: '#3a6a3a' },
+  // Bonus: Living Room
+  living_room:     { water: '#1a3a5c', border: '#aaccee', gravel: '#9a8a6a', plant: '#4a8a4a' },
 };
 
 const COLORS = {
@@ -33,10 +46,31 @@ export class Renderer {
     this._ctx = ctx;
     this._camera = camera;
     this._animSystem = null;
+    this._bgImages = {}; // cache: theme -> HTMLImageElement
+    this._bgLoading = {}; // track in-flight loads
   }
 
   /** Set animation system reference. */
   setAnimationSystem(anim) { this._animSystem = anim; }
+
+  /**
+   * Load a background image for a given theme.
+   * Images are cached after first load.
+   */
+  _loadBgImage(theme) {
+    if (this._bgImages[theme] || this._bgLoading[theme]) return;
+    this._bgLoading[theme] = true;
+    const img = new Image();
+    img.src = `src/assets/backgrounds/${theme}.png`;
+    img.onload = () => {
+      this._bgImages[theme] = img;
+      delete this._bgLoading[theme];
+    };
+    img.onerror = () => {
+      console.warn(`Renderer: background image not found for theme "${theme}"`);
+      delete this._bgLoading[theme];
+    };
+  }
 
   /** Draw the full frame. */
   render(gameState) {
@@ -56,32 +90,40 @@ export class Renderer {
   }
 
   _getTheme(gs) {
-    const theme = gs.levelConfig?.tankTheme || 'kitchen_tank';
-    return THEME_COLORS[theme] || THEME_COLORS.kitchen_tank;
+    const theme = gs.levelConfig?.tankTheme || 'freshwater_1';
+    return THEME_COLORS[theme] || THEME_COLORS.freshwater_1;
   }
 
   _drawBackground(ctx, gs) {
     const tw = this._camera.getTankWidth();
     const th = this._camera.getTankHeight();
     const theme = this._getTheme(gs);
+    const themeKey = gs.levelConfig?.tankTheme || 'freshwater_1';
 
-    // Water gradient
-    const grad = ctx.createLinearGradient(0, 0, 0, th);
-    grad.addColorStop(0, theme.water);
-    grad.addColorStop(1, this._darken(theme.water, 30));
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, tw, th);
+    // Try to draw background image
+    this._loadBgImage(themeKey);
+    const bgImg = this._bgImages[themeKey];
+    if (bgImg) {
+      ctx.drawImage(bgImg, 0, 0, tw, th);
+    } else {
+      // Fallback: procedural water gradient
+      const grad = ctx.createLinearGradient(0, 0, 0, th);
+      grad.addColorStop(0, theme.water);
+      grad.addColorStop(1, this._darken(theme.water, 30));
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, tw, th);
 
-    // Gravel bottom
-    ctx.fillStyle = theme.gravel;
-    ctx.fillRect(0, th - 20, tw, 20);
-    // Gravel texture dots
-    ctx.fillStyle = this._lighten(theme.gravel, 20);
-    for (let i = 0; i < tw; i += 12) {
-      const y = th - 18 + Math.sin(i * 0.7) * 4;
-      ctx.beginPath();
-      ctx.arc(i + 6, y + 8, 3 + Math.sin(i) * 1.5, 0, Math.PI * 2);
-      ctx.fill();
+      // Gravel bottom
+      ctx.fillStyle = theme.gravel;
+      ctx.fillRect(0, th - 20, tw, 20);
+      // Gravel texture dots
+      ctx.fillStyle = this._lighten(theme.gravel, 20);
+      for (let i = 0; i < tw; i += 12) {
+        const y = th - 18 + Math.sin(i * 0.7) * 4;
+        ctx.beginPath();
+        ctx.arc(i + 6, y + 8, 3 + Math.sin(i) * 1.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
 
     // Tank border
@@ -89,74 +131,64 @@ export class Renderer {
     ctx.lineWidth = 4;
     ctx.strokeRect(0, 0, tw, th);
 
-    // Entrance zone
+    // Exit zone (top-right corner) — pulsing diagonal triangles pointing up-right
     if (gs.levelConfig) {
-      const ez = gs.levelConfig.entranceZone;
-      ctx.fillStyle = COLORS.entranceZone;
-      ctx.globalAlpha = 0.25;
-      ctx.fillRect(ez.x, ez.y, ez.w, ez.h);
-      ctx.globalAlpha = 1.0;
-      ctx.fillStyle = '#fff';
-      ctx.font = '10px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.globalAlpha = 0.5;
-      ctx.fillText('IN', ez.x + ez.w / 2, ez.y + ez.h / 2 + 3);
+      const ex = gs.levelConfig.exitZone;
+      const t = performance.now() / 600;
+      const cx = ex.x + ex.w / 2;
+      const cy = ex.y + ex.h / 2;
+
+      // Three isosceles triangles pointing diagonally up-right, pulsing in sequence
+      for (let i = 0; i < 3; i++) {
+        const phase = (t - i * 0.4) % 2;
+        const alpha = phase >= 0 && phase < 1 ? 0.3 + 0.7 * Math.sin(phase * Math.PI) : 0.15;
+        const offset = i * 18;
+        // Each triangle offset diagonally (up-right)
+        const tx = cx - 16 + offset;
+        const ty = cy + 16 - offset;
+
+        ctx.fillStyle = COLORS.exitZone;
+        ctx.globalAlpha = alpha;
+        ctx.beginPath();
+        // Isosceles triangle pointing up-right (45 degrees)
+        // Tip points up-right, base is perpendicular to that direction
+        ctx.moveTo(tx + 12, ty - 12);  // tip (up-right)
+        ctx.lineTo(tx - 6, ty - 2);    // base left
+        ctx.lineTo(tx + 2, ty + 6);    // base right
+        ctx.closePath();
+        ctx.fill();
+      }
       ctx.globalAlpha = 1.0;
 
-      // Exit zone with animated glow
-      const ex = gs.levelConfig.exitZone;
-      const pulse = 0.35 + 0.15 * Math.sin(performance.now() / 250);
-      ctx.fillStyle = COLORS.exitZone;
-      ctx.globalAlpha = pulse;
-      ctx.fillRect(ex.x, ex.y, ex.w, ex.h);
-      ctx.globalAlpha = 1.0;
-      ctx.strokeStyle = COLORS.exitZone;
-      ctx.lineWidth = 2;
-      ctx.strokeRect(ex.x, ex.y, ex.w, ex.h);
-      // Arrow pointing up
+      // Label
       ctx.fillStyle = '#fff';
-      ctx.beginPath();
-      ctx.moveTo(ex.x + ex.w / 2, ex.y + 10);
-      ctx.lineTo(ex.x + ex.w / 2 - 10, ex.y + 30);
-      ctx.lineTo(ex.x + ex.w / 2 + 10, ex.y + 30);
-      ctx.closePath();
-      ctx.fill();
-      ctx.font = '11px sans-serif';
+      ctx.font = 'bold 10px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('EXIT', ex.x + ex.w / 2, ex.y + ex.h - 10);
+      ctx.fillText('JUMP TO EXIT', cx, ex.y + ex.h - 6);
     }
   }
 
   _drawDecorations(ctx, gs) {
     const tw = this._camera.getTankWidth();
     const th = this._camera.getTankHeight();
-    const theme = this._getTheme(gs);
 
-    // Simple plant decorations
-    const plantPositions = [80, 250, 500, 780, 1050];
-    for (const px of plantPositions) {
-      if (px > tw) continue;
-      const height = 40 + Math.sin(px * 0.3) * 20;
-      const sway = Math.sin(performance.now() / 1000 + px) * 3;
-      ctx.fillStyle = theme.plant;
-      ctx.beginPath();
-      ctx.moveTo(px - 4, th - 20);
-      ctx.quadraticCurveTo(px + sway, th - 20 - height * 0.6, px + sway * 0.5 - 2, th - 20 - height);
-      ctx.quadraticCurveTo(px + sway, th - 20 - height * 0.6, px + 4, th - 20);
-      ctx.closePath();
-      ctx.fill();
-    }
-
-    // Bubbles
+    // Ambient bubbles
     const t = performance.now() / 1000;
-    for (let i = 0; i < 5; i++) {
-      const bx = (i * 271 + t * 20) % tw;
-      const by = th - ((t * 30 + i * 150) % th);
-      ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    for (let i = 0; i < 12; i++) {
+      const bx = (i * 271 + t * (15 + i * 3)) % tw;
+      const by = th - ((t * (25 + i * 8) + i * 120) % th);
+      const radius = 2 + (i % 4);
+      const wobble = Math.sin(t * 2 + i * 1.5) * 3;
+      ctx.strokeStyle = `rgba(255,255,255,${0.08 + (i % 3) * 0.04})`;
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.arc(bx, by, 3 + i, 0, Math.PI * 2);
+      ctx.arc(bx + wobble, by, radius, 0, Math.PI * 2);
       ctx.stroke();
+      // Highlight dot on bubble
+      ctx.fillStyle = `rgba(255,255,255,${0.05 + (i % 3) * 0.03})`;
+      ctx.beginPath();
+      ctx.arc(bx + wobble - radius * 0.3, by - radius * 0.3, radius * 0.3, 0, Math.PI * 2);
+      ctx.fill();
     }
   }
 
