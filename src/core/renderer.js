@@ -174,7 +174,7 @@ export class Renderer {
 
     // Ambient bubbles
     const t = performance.now() / 1000;
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 24; i++) {
       const bx = (i * 271 + t * (15 + i * 3)) % tw;
       const by = th - ((t * (25 + i * 8) + i * 120) % th);
       const radius = 2 + (i % 4);
