@@ -10,10 +10,9 @@ export class HUD {
     this._flashTimer = 0;
   }
 
-  /** Trigger energy change flash. */
+  /** Trigger energy change flash (disabled). */
   flashEnergy(gained) {
-    this._energyFlash = gained ? 1 : -1;
-    this._flashTimer = 0.2; // seconds
+    // Screen flash removed
   }
 
   /**
