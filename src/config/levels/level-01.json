@@ -1,13 +1,31 @@
 {
   "levelIndex": 0,
-  "tankTheme": "kitchen_tank",
-  "narrativeDescription": "A small tank on a kitchen counter. Time to find a way out!",
-  "tankDimensions": { "width": 1280, "height": 720 },
-  "entranceZone": { "x": 0, "y": 40, "w": 80, "h": 80 },
-  "exitZone": { "x": 1200, "y": 40, "w": 80, "h": 80 },
-  "exitEnergyThreshold": 25,
-  "exitMomentumThreshold": 1.5,
-  "playerStartPosition": { "x": 40, "y": 80 },
+  "world": 1,
+  "worldName": "Fresh Water",
+  "tankTheme": "freshwater_1",
+  "narrativeDescription": "A small bowl on a kitchen counter. Time to find a way out!",
+  "tankDimensions": {
+    "width": 1280,
+    "height": 720
+  },
+  "entranceZone": {
+    "x": 0,
+    "y": 40,
+    "w": 80,
+    "h": 80
+  },
+  "exitZone": {
+    "x": 1200,
+    "y": 0,
+    "w": 80,
+    "h": 80
+  },
+  "exitEnergyThreshold": 100,
+  "exitMomentumThreshold": 0,
+  "playerStartPosition": {
+    "x": 40,
+    "y": -30
+  },
   "startingEnergy": 50,
   "foodSpawnRate": 2.5,
   "foodEnergyValue": 12,
@@ -17,8 +35,8 @@
   "pumps": [],
   "hazards": [],
   "bonusPickupSpawnChance": 0.0,
-  "stressEnabled": false,
-  "stressRate": 0,
+  "stressEnabled": true,
+  "stressRate": 1.5,
   "targetSessionLength": 60,
   "difficultyTier": 1
 }

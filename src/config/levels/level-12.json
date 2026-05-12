@@ -1,0 +1,130 @@
+{
+  "levelIndex": 11,
+  "world": 4,
+  "worldName": "Pet Store Tanks",
+  "tankTheme": "petstore_3",
+  "narrativeDescription": "The final pet store tank. Everything is thrown at you here.",
+  "tankDimensions": {
+    "width": 1280,
+    "height": 720
+  },
+  "entranceZone": {
+    "x": 0,
+    "y": 40,
+    "w": 80,
+    "h": 80
+  },
+  "exitZone": {
+    "x": 1200,
+    "y": 0,
+    "w": 80,
+    "h": 80
+  },
+  "exitEnergyThreshold": 100,
+  "exitMomentumThreshold": 0,
+  "playerStartPosition": {
+    "x": 40,
+    "y": -30
+  },
+  "startingEnergy": 38,
+  "foodSpawnRate": 1.8,
+  "foodEnergyValue": 9,
+  "rottenFoodPenalty": 9,
+  "maxFoodSpawnInterval": 4.2,
+  "predators": [
+    {
+      "type": "chase",
+      "patrolPath": [
+        {
+          "x": 300,
+          "y": 250
+        },
+        {
+          "x": 700,
+          "y": 250
+        }
+      ],
+      "speed": 1.6,
+      "detectionRadius": 200,
+      "triggerRadius": 0
+    },
+    {
+      "type": "patrol",
+      "patrolPath": [
+        {
+          "x": 150,
+          "y": 550
+        },
+        {
+          "x": 600,
+          "y": 550
+        }
+      ],
+      "speed": 1.6,
+      "detectionRadius": 0,
+      "triggerRadius": 0
+    },
+    {
+      "type": "ambush",
+      "patrolPath": [
+        {
+          "x": 1000,
+          "y": 400
+        }
+      ],
+      "speed": 2.2,
+      "detectionRadius": 0,
+      "triggerRadius": 120
+    }
+  ],
+  "pumps": [
+    {
+      "position": {
+        "x": 640,
+        "y": 650
+      },
+      "direction": {
+        "x": 0.7,
+        "y": -0.5
+      },
+      "strength": 0.7,
+      "areaOfEffect": {
+        "x": 500,
+        "y": 550,
+        "w": 300,
+        "h": 150
+      }
+    }
+  ],
+  "hazards": [
+    {
+      "type": "rock",
+      "position": {
+        "x": 400,
+        "y": 450
+      },
+      "dimensions": {
+        "w": 70,
+        "h": 70
+      }
+    },
+    {
+      "type": "suction",
+      "position": {
+        "x": 850,
+        "y": 600
+      },
+      "dimensions": {
+        "w": 50,
+        "h": 50
+      },
+      "suctionRadius": 110,
+      "suctionStrength": 220
+    }
+  ],
+  "bonusPickupSpawnChance": 0.05,
+  "stressEnabled": true,
+  "stressRate": 3.15,
+  "targetSessionLength": 100,
+  "difficultyTier": 12
+}

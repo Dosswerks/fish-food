@@ -1,0 +1,94 @@
+{
+  "levelIndex": 7,
+  "world": 3,
+  "worldName": "Neglected Tanks",
+  "tankTheme": "neglected_2",
+  "narrativeDescription": "An overgrown tank with algae everywhere. Visibility is low.",
+  "tankDimensions": {
+    "width": 1280,
+    "height": 720
+  },
+  "entranceZone": {
+    "x": 0,
+    "y": 40,
+    "w": 80,
+    "h": 80
+  },
+  "exitZone": {
+    "x": 1200,
+    "y": 0,
+    "w": 80,
+    "h": 80
+  },
+  "exitEnergyThreshold": 100,
+  "exitMomentumThreshold": 0,
+  "playerStartPosition": {
+    "x": 40,
+    "y": -30
+  },
+  "startingEnergy": 42,
+  "foodSpawnRate": 2.0,
+  "foodEnergyValue": 9,
+  "rottenFoodPenalty": 8,
+  "maxFoodSpawnInterval": 4.8,
+  "predators": [
+    {
+      "type": "patrol",
+      "patrolPath": [
+        {
+          "x": 300,
+          "y": 350
+        },
+        {
+          "x": 700,
+          "y": 350
+        }
+      ],
+      "speed": 1.4,
+      "detectionRadius": 0,
+      "triggerRadius": 0
+    },
+    {
+      "type": "ambush",
+      "patrolPath": [
+        {
+          "x": 900,
+          "y": 550
+        }
+      ],
+      "speed": 1.8,
+      "detectionRadius": 0,
+      "triggerRadius": 100
+    }
+  ],
+  "pumps": [],
+  "hazards": [
+    {
+      "type": "rock",
+      "position": {
+        "x": 350,
+        "y": 600
+      },
+      "dimensions": {
+        "w": 120,
+        "h": 40
+      }
+    },
+    {
+      "type": "rock",
+      "position": {
+        "x": 700,
+        "y": 450
+      },
+      "dimensions": {
+        "w": 60,
+        "h": 80
+      }
+    }
+  ],
+  "bonusPickupSpawnChance": 0.04,
+  "stressEnabled": true,
+  "stressRate": 2.55,
+  "targetSessionLength": 90,
+  "difficultyTier": 8
+}

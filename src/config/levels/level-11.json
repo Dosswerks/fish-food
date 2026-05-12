@@ -1,0 +1,110 @@
+{
+  "levelIndex": 10,
+  "world": 4,
+  "worldName": "Pet Store Tanks",
+  "tankTheme": "petstore_2",
+  "narrativeDescription": "The predator tank. Multiple hunters patrol these waters.",
+  "tankDimensions": {
+    "width": 1280,
+    "height": 720
+  },
+  "entranceZone": {
+    "x": 0,
+    "y": 40,
+    "w": 80,
+    "h": 80
+  },
+  "exitZone": {
+    "x": 1200,
+    "y": 0,
+    "w": 80,
+    "h": 80
+  },
+  "exitEnergyThreshold": 100,
+  "exitMomentumThreshold": 0,
+  "playerStartPosition": {
+    "x": 40,
+    "y": -30
+  },
+  "startingEnergy": 40,
+  "foodSpawnRate": 1.9,
+  "foodEnergyValue": 9,
+  "rottenFoodPenalty": 8,
+  "maxFoodSpawnInterval": 4.5,
+  "predators": [
+    {
+      "type": "patrol",
+      "patrolPath": [
+        {
+          "x": 150,
+          "y": 300
+        },
+        {
+          "x": 550,
+          "y": 300
+        }
+      ],
+      "speed": 1.5,
+      "detectionRadius": 0,
+      "triggerRadius": 0
+    },
+    {
+      "type": "chase",
+      "patrolPath": [
+        {
+          "x": 600,
+          "y": 500
+        },
+        {
+          "x": 1000,
+          "y": 500
+        }
+      ],
+      "speed": 1.5,
+      "detectionRadius": 180,
+      "triggerRadius": 0
+    },
+    {
+      "type": "ambush",
+      "patrolPath": [
+        {
+          "x": 900,
+          "y": 200
+        }
+      ],
+      "speed": 2.0,
+      "detectionRadius": 0,
+      "triggerRadius": 110
+    }
+  ],
+  "pumps": [],
+  "hazards": [
+    {
+      "type": "rock",
+      "position": {
+        "x": 450,
+        "y": 400
+      },
+      "dimensions": {
+        "w": 80,
+        "h": 70
+      }
+    },
+    {
+      "type": "rock",
+      "position": {
+        "x": 750,
+        "y": 600
+      },
+      "dimensions": {
+        "w": 100,
+        "h": 40
+      }
+    }
+  ],
+  "bonusPickupSpawnChance": 0.05,
+  "stressEnabled": true,
+  "stressRate": 3.0,
+  "targetSessionLength": 95,
+  "difficultyTier": 11
+}

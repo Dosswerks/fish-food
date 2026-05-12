@@ -1,0 +1,105 @@
+{
+  "levelIndex": 9,
+  "world": 4,
+  "worldName": "Pet Store Tanks",
+  "tankTheme": "petstore_1",
+  "narrativeDescription": "A display tank in a busy pet store. Lots of activity here.",
+  "tankDimensions": {
+    "width": 1280,
+    "height": 720
+  },
+  "entranceZone": {
+    "x": 0,
+    "y": 40,
+    "w": 80,
+    "h": 80
+  },
+  "exitZone": {
+    "x": 1200,
+    "y": 0,
+    "w": 80,
+    "h": 80
+  },
+  "exitEnergyThreshold": 100,
+  "exitMomentumThreshold": 0,
+  "playerStartPosition": {
+    "x": 40,
+    "y": -30
+  },
+  "startingEnergy": 42,
+  "foodSpawnRate": 2.0,
+  "foodEnergyValue": 9,
+  "rottenFoodPenalty": 7,
+  "maxFoodSpawnInterval": 4.5,
+  "predators": [
+    {
+      "type": "patrol",
+      "patrolPath": [
+        {
+          "x": 200,
+          "y": 350
+        },
+        {
+          "x": 700,
+          "y": 350
+        }
+      ],
+      "speed": 1.5,
+      "detectionRadius": 0,
+      "triggerRadius": 0
+    },
+    {
+      "type": "chase",
+      "patrolPath": [
+        {
+          "x": 800,
+          "y": 500
+        },
+        {
+          "x": 1050,
+          "y": 500
+        }
+      ],
+      "speed": 1.4,
+      "detectionRadius": 170,
+      "triggerRadius": 0
+    }
+  ],
+  "pumps": [
+    {
+      "position": {
+        "x": 300,
+        "y": 650
+      },
+      "direction": {
+        "x": 1,
+        "y": -0.3
+      },
+      "strength": 0.5,
+      "areaOfEffect": {
+        "x": 200,
+        "y": 550,
+        "w": 250,
+        "h": 120
+      }
+    }
+  ],
+  "hazards": [
+    {
+      "type": "rock",
+      "position": {
+        "x": 500,
+        "y": 580
+      },
+      "dimensions": {
+        "w": 90,
+        "h": 50
+      }
+    }
+  ],
+  "bonusPickupSpawnChance": 0.04,
+  "stressEnabled": true,
+  "stressRate": 2.85,
+  "targetSessionLength": 90,
+  "difficultyTier": 10
+}

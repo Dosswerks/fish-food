@@ -1,9 +1,9 @@
 {
-  "levelIndex": 3,
-  "world": 2,
-  "worldName": "Salt Water",
-  "tankTheme": "saltwater_1",
-  "narrativeDescription": "A saltwater reef tank. The colors are vivid but the fish are faster.",
+  "levelIndex": 6,
+  "world": 3,
+  "worldName": "Neglected Tanks",
+  "tankTheme": "neglected_1",
+  "narrativeDescription": "A murky, neglected tank. The water is cloudy and food rots quickly.",
   "tankDimensions": {
     "width": 1280,
     "height": 720
@@ -26,25 +26,25 @@
     "x": 40,
     "y": -30
   },
-  "startingEnergy": 48,
-  "foodSpawnRate": 2.3,
-  "foodEnergyValue": 11,
-  "rottenFoodPenalty": 6,
-  "maxFoodSpawnInterval": 5.5,
+  "startingEnergy": 44,
+  "foodSpawnRate": 2.1,
+  "foodEnergyValue": 10,
+  "rottenFoodPenalty": 8,
+  "maxFoodSpawnInterval": 5.0,
   "predators": [
     {
       "type": "patrol",
       "patrolPath": [
         {
           "x": 200,
-          "y": 350
+          "y": 400
         },
         {
-          "x": 700,
-          "y": 350
+          "x": 600,
+          "y": 400
         }
       ],
-      "speed": 1.2,
+      "speed": 1.3,
       "detectionRadius": 0,
       "triggerRadius": 0
     }
@@ -54,18 +54,29 @@
     {
       "type": "rock",
       "position": {
-        "x": 600,
+        "x": 400,
         "y": 550
       },
       "dimensions": {
-        "w": 90,
+        "w": 100,
         "h": 60
+      }
+    },
+    {
+      "type": "rock",
+      "position": {
+        "x": 800,
+        "y": 300
+      },
+      "dimensions": {
+        "w": 80,
+        "h": 50
       }
     }
   ],
-  "bonusPickupSpawnChance": 0.02,
+  "bonusPickupSpawnChance": 0.03,
   "stressEnabled": true,
-  "stressRate": 1.95,
-  "targetSessionLength": 75,
-  "difficultyTier": 4
+  "stressRate": 2.4,
+  "targetSessionLength": 85,
+  "difficultyTier": 7
 }

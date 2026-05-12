@@ -1,0 +1,102 @@
+{
+  "levelIndex": 8,
+  "world": 3,
+  "worldName": "Neglected Tanks",
+  "tankTheme": "neglected_3",
+  "narrativeDescription": "The worst tank yet. A filter drain creates a deadly suction zone.",
+  "tankDimensions": {
+    "width": 1280,
+    "height": 720
+  },
+  "entranceZone": {
+    "x": 0,
+    "y": 40,
+    "w": 80,
+    "h": 80
+  },
+  "exitZone": {
+    "x": 1200,
+    "y": 0,
+    "w": 80,
+    "h": 80
+  },
+  "exitEnergyThreshold": 100,
+  "exitMomentumThreshold": 0,
+  "playerStartPosition": {
+    "x": 40,
+    "y": -30
+  },
+  "startingEnergy": 40,
+  "foodSpawnRate": 2.0,
+  "foodEnergyValue": 9,
+  "rottenFoodPenalty": 9,
+  "maxFoodSpawnInterval": 4.5,
+  "predators": [
+    {
+      "type": "chase",
+      "patrolPath": [
+        {
+          "x": 400,
+          "y": 300
+        },
+        {
+          "x": 800,
+          "y": 300
+        }
+      ],
+      "speed": 1.5,
+      "detectionRadius": 180,
+      "triggerRadius": 0
+    }
+  ],
+  "pumps": [
+    {
+      "position": {
+        "x": 640,
+        "y": 650
+      },
+      "direction": {
+        "x": 0,
+        "y": -1
+      },
+      "strength": 0.6,
+      "areaOfEffect": {
+        "x": 500,
+        "y": 500,
+        "w": 280,
+        "h": 200
+      }
+    }
+  ],
+  "hazards": [
+    {
+      "type": "rock",
+      "position": {
+        "x": 300,
+        "y": 500
+      },
+      "dimensions": {
+        "w": 90,
+        "h": 50
+      }
+    },
+    {
+      "type": "suction",
+      "position": {
+        "x": 640,
+        "y": 600
+      },
+      "dimensions": {
+        "w": 50,
+        "h": 50
+      },
+      "suctionRadius": 100,
+      "suctionStrength": 200
+    }
+  ],
+  "bonusPickupSpawnChance": 0.04,
+  "stressEnabled": true,
+  "stressRate": 2.7,
+  "targetSessionLength": 95,
+  "difficultyTier": 9
+}

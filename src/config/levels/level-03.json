@@ -1,50 +1,71 @@
 {
   "levelIndex": 2,
-  "tankTheme": "lab_tank",
-  "narrativeDescription": "A research aquarium in a university lab. The water currents are strong here.",
-  "tankDimensions": { "width": 1280, "height": 720 },
-  "entranceZone": { "x": 0, "y": 40, "w": 80, "h": 80 },
-  "exitZone": { "x": 1200, "y": 40, "w": 80, "h": 80 },
-  "exitEnergyThreshold": 35,
-  "exitMomentumThreshold": 1.8,
-  "playerStartPosition": { "x": 40, "y": 80 },
-  "startingEnergy": 45,
+  "world": 1,
+  "worldName": "Fresh Water",
+  "tankTheme": "freshwater_3",
+  "narrativeDescription": "The biggest freshwater tank yet. Something lurks in the plants...",
+  "tankDimensions": {
+    "width": 1280,
+    "height": 720
+  },
+  "entranceZone": {
+    "x": 0,
+    "y": 40,
+    "w": 80,
+    "h": 80
+  },
+  "exitZone": {
+    "x": 1200,
+    "y": 0,
+    "w": 80,
+    "h": 80
+  },
+  "exitEnergyThreshold": 100,
+  "exitMomentumThreshold": 0,
+  "playerStartPosition": {
+    "x": 40,
+    "y": -30
+  },
+  "startingEnergy": 48,
   "foodSpawnRate": 2.3,
   "foodEnergyValue": 11,
-  "rottenFoodPenalty": 6,
+  "rottenFoodPenalty": 5,
   "maxFoodSpawnInterval": 5.5,
   "predators": [
     {
       "type": "patrol",
-      "patrolPath": [{ "x": 200, "y": 500 }, { "x": 700, "y": 500 }],
-      "speed": 1.3,
+      "patrolPath": [
+        {
+          "x": 300,
+          "y": 400
+        },
+        {
+          "x": 800,
+          "y": 400
+        }
+      ],
+      "speed": 1.0,
       "detectionRadius": 0,
       "triggerRadius": 0
     }
   ],
-  "pumps": [
-    {
-      "position": { "x": 640, "y": 600 },
-      "direction": { "x": -1, "y": 0 },
-      "strength": 0.6,
-      "areaOfEffect": { "x": 400, "y": 500, "w": 300, "h": 150 }
-    }
-  ],
+  "pumps": [],
   "hazards": [
     {
       "type": "rock",
-      "position": { "x": 350, "y": 300 },
-      "dimensions": { "w": 80, "h": 60 }
-    },
-    {
-      "type": "rock",
-      "position": { "x": 850, "y": 550 },
-      "dimensions": { "w": 100, "h": 40 }
+      "position": {
+        "x": 400,
+        "y": 580
+      },
+      "dimensions": {
+        "w": 100,
+        "h": 50
+      }
     }
   ],
-  "bonusPickupSpawnChance": 0.03,
-  "stressEnabled": false,
-  "stressRate": 0,
-  "targetSessionLength": 80,
+  "bonusPickupSpawnChance": 0.02,
+  "stressEnabled": true,
+  "stressRate": 1.8,
+  "targetSessionLength": 70,
   "difficultyTier": 3
 }
