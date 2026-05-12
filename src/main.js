@@ -162,11 +162,11 @@ async function loadLevel(index) {
     gs.narrativeTimer = 0;
     gs.droppingIn = true;
     gs.dropVelocity = 0;
+    gs.dropElapsed = 0;
 
     stateManager.loadLevel(index);
     analytics.levelStart(index);
-    // Music disabled until real background music assets are available
-    // audio.playMusic(config.tankTheme);
+    // Music will start during the drop-in phase if config.musicFile is set
   } catch (err) {
     console.error('Failed to load level:', err);
     stateManager.transition(States.MAIN_MENU);
@@ -363,6 +363,20 @@ function update(dt) {
   if (gs.droppingIn) {
     const config = gs.levelConfig;
     if (config && gs.player) {
+      // Track elapsed time in drop-in phase
+      if (gs.dropElapsed === undefined) gs.dropElapsed = 0;
+      gs.dropElapsed += dt;
+
+      // Play splash sound at the start of drop-in
+      if (gs.dropElapsed <= dt * 2) {
+        audio.playTone(180, 0.25, 'triangle'); // splash thud
+        setTimeout(() => audio.playTone(400, 0.1, 'sine'), 50); // splash sparkle
+        // Also play the level's music file if configured
+        if (config.musicFile) {
+          audio.playMusicFile(config.musicFile);
+        }
+      }
+
       // Curved arc: accelerate downward and drift rightward
       gs.dropVelocity += 400 * dt; // gravity (softer for arc feel)
       const horizontalDrift = 120 * dt; // drift right
@@ -379,15 +393,17 @@ function update(dt) {
       gs.player.boundingBox.y = gs.player.position.y;
       gs.player.facingRight = true;
 
-      // Spawn wake bubbles behind the player
+      // Spawn wake bubbles behind the player (only for first 3 seconds)
       if (!gs.dropBubbles) gs.dropBubbles = [];
-      gs.dropBubbles.push({
-        x: gs.player.position.x + 8 + (Math.random() - 0.5) * 10,
-        y: gs.player.position.y + 12 + (Math.random() - 0.5) * 6,
-        radius: 2 + Math.random() * 3,
-        alpha: 0.6,
-        vy: -(20 + Math.random() * 30), // float upward
-      });
+      if (gs.dropElapsed < 3.0) {
+        gs.dropBubbles.push({
+          x: gs.player.position.x + 8 + (Math.random() - 0.5) * 10,
+          y: gs.player.position.y + 12 + (Math.random() - 0.5) * 6,
+          radius: 2 + Math.random() * 3,
+          alpha: 0.6,
+          vy: -(20 + Math.random() * 30), // float upward
+        });
+      }
 
       // Update existing bubbles
       for (let i = gs.dropBubbles.length - 1; i >= 0; i--) {
@@ -399,13 +415,26 @@ function update(dt) {
 
       // Decelerate and land smoothly when reaching target depth
       if (gs.player.position.y >= 120) {
-        gs.dropVelocity *= 0.8;
-        if (gs.dropVelocity < 5) {
+        gs.dropVelocity *= 0.7; // stronger damping for reliable landing
+        if (gs.dropVelocity < 20) {
           gs.droppingIn = false;
           gs.dropVelocity = 0;
+          gs.dropElapsed = undefined;
           gs.dropBubbles = []; // clear bubble trail
           momentum.reset({ x: gs.player.position.x, y: gs.player.position.y });
         }
+      }
+
+      // Safety: force-end drop-in after 4 seconds regardless
+      if (gs.dropElapsed >= 4.0) {
+        gs.droppingIn = false;
+        gs.dropVelocity = 0;
+        gs.dropElapsed = undefined;
+        gs.dropBubbles = [];
+        if (gs.player.position.y < 120) gs.player.position.y = 120;
+        gs.player.boundingBox.x = gs.player.position.x;
+        gs.player.boundingBox.y = gs.player.position.y;
+        momentum.reset({ x: gs.player.position.x, y: gs.player.position.y });
       }
     }
     input.flush();
@@ -1113,8 +1142,8 @@ window.addEventListener('blur', () => {
 
 // ── Pause/Resume via state transitions ─────────────────────
 stateManager.onTransition((oldState, newState) => {
-  if (newState === States.PAUSED) { gameLoop.pause(); audio.duckMusic(); }
-  if (oldState === States.PAUSED && newState === States.PLAYING) { gameLoop.resume(); audio.unduckMusic(); }
+  if (newState === States.PAUSED) { audio.duckMusic(); }
+  if (oldState === States.PAUSED && newState === States.PLAYING) { audio.unduckMusic(); }
   if (newState === States.MAIN_MENU) audio.stopMusic();
 });
 
@@ -1125,12 +1154,12 @@ function wrappedUpdate(dt) {
     // Pause menu input
     if (input.isPausePressed()) {
       stateManager.transition(States.PLAYING);
-    } else if (input._keys['KeyR']) {
+    } else if (input._justPressed['KeyR']) {
       loadLevel(stateManager.getCurrentLevelIndex());
       stateManager.transition(States.PLAYING);
-    } else if (input._keys['KeyS']) {
+    } else if (input._justPressed['KeyS']) {
       stateManager.transition(States.SETTINGS, { from: 'paused' });
-    } else if (input._keys['KeyQ']) {
+    } else if (input._justPressed['KeyQ']) {
       stateManager.transition(States.MAIN_MENU);
     }
     input.flush();
