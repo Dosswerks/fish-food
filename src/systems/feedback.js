@@ -84,26 +84,8 @@ export class FeedbackSystem {
 
   /** Render active visual effects to canvas. */
   render(ctx, canvasW, canvasH) {
-    // Screen shake offset (applied by caller to camera)
-    // Vignette / color overlays
-    for (const effect of this._effects) {
-      const progress = effect.timer / effect.maxTime;
-      const alpha = effect.alpha * progress;
-      if (this._motionReduction) {
-        // Static border flash instead of overlay
-        ctx.strokeStyle = effect.color;
-        ctx.lineWidth = 6;
-        ctx.globalAlpha = alpha;
-        ctx.strokeRect(3, 3, canvasW - 6, canvasH - 6);
-        ctx.globalAlpha = 1.0;
-      } else {
-        // Vignette overlay
-        ctx.fillStyle = effect.color;
-        ctx.globalAlpha = alpha;
-        ctx.fillRect(0, 0, canvasW, canvasH);
-        ctx.globalAlpha = 1.0;
-      }
-    }
+    // Screen flash overlays removed — not a good player experience.
+    // Screen shake is still applied via getShakeOffset() by the caller.
   }
 
   /** Get current screen shake offset. */
