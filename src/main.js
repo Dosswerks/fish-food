@@ -447,17 +447,19 @@ function update(dt) {
     if (gs.narrativeTimer <= 0 || input.isAnyPressed()) {
       gs.showingNarrative = false;
     }
-    input.flush();
-    return;
+    // Don't block gameplay — narrative displays as overlay while action continues
   }
 
-  // ── Tutorial blocking ──
+  // ── Tutorial — auto-dismiss after timeout, never blocks gameplay ──
   if (tutorial && tutorial.isBlocking()) {
-    if (input.isAnyPressed()) {
+    if (!gs._tutorialDisplayTimer) gs._tutorialDisplayTimer = 4.0;
+    gs._tutorialDisplayTimer -= dt;
+    if (gs._tutorialDisplayTimer <= 0 || input.isAnyPressed()) {
       tutorial.dismiss();
+      gs._tutorialDisplayTimer = 0;
     }
-    input.flush();
-    return;
+  } else {
+    gs._tutorialDisplayTimer = 0;
   }
 
   // ── Pause check ──
