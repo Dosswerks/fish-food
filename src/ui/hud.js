@@ -74,12 +74,12 @@ export class HUD {
 
     ctx.globalAlpha = 1.0;
 
-    // Stress indicator
-    if (state.stressEnabled && state.stress !== undefined) {
-      const stressBarW = barW * 0.6;
-      const stressBarH = barH * 0.7;
+    // Stress indicator (acts as timer) — same size as energy bar
+    if (state.stress !== undefined) {
+      const stressBarW = barW;
+      const stressBarH = barH;
       const stressX = cw / 2 - stressBarW / 2;
-      const stressY = barY - barH - 24 * (scale / (window.devicePixelRatio || 1));
+      const stressY = barY - barH - 28 * (scale / (window.devicePixelRatio || 1));
 
       ctx.fillStyle = '#333';
       ctx.fillRect(stressX, stressY, stressBarW, stressBarH);
@@ -93,8 +93,8 @@ export class HUD {
       ctx.strokeRect(stressX, stressY, stressBarW, stressBarH);
 
       ctx.fillStyle = '#fff';
-      ctx.font = `${baseSize * 0.8}px sans-serif`;
-      ctx.fillText(`Stress: ${Math.round(state.stress)}`, cw / 2, stressY - 4);
+      ctx.font = `${baseSize}px sans-serif`;
+      ctx.fillText(`Stress: ${Math.round(state.stress)}`, cw / 2, stressY - 6);
     }
   }
 

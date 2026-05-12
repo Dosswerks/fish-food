@@ -59,7 +59,7 @@ export class DebugOverlay {
 
     // Background panel
     ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-    ctx.fillRect(x - 4, y - 14, 260, lineH * 12 + 8);
+    ctx.fillRect(x - 4, y - 14, 280, lineH * 14 + 8);
 
     ctx.fillStyle = '#0f0';
     ctx.font = '12px monospace';
@@ -69,6 +69,7 @@ export class DebugOverlay {
       `FPS: ${this._fps}`,
       `State: ${data.state || '?'}`,
       `Level: ${data.levelIndex ?? '?'} (${data.tankTheme || '?'})`,
+      `World: ${data.worldName || '?'}`,
       `Pos: ${data.playerX?.toFixed(1)}, ${data.playerY?.toFixed(1)}`,
       `Vel: ${data.velX?.toFixed(1)}, ${data.velY?.toFixed(1)} (${data.speed?.toFixed(1)})`,
       `Energy: ${data.energy?.toFixed(1)}`,
@@ -77,6 +78,7 @@ export class DebugOverlay {
       `Predators: ${data.predatorCount ?? 0}`,
       `Entities: ${data.entityCount ?? 0} pooled`,
       `Bonuses: ${data.bonusCount ?? 0} | Shield: ${data.shieldTimer?.toFixed(1) || '0'} | Speed: ${data.speedTimer?.toFixed(1) || '0'}`,
+      `[N]ext level  [P]rev level`,
     ];
 
     for (const line of lines) {
