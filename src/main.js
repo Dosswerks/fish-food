@@ -250,17 +250,13 @@ function update(dt) {
     const saveData = hasSave ? save.load() : null;
     const hasCompleted = saveData && saveData.completedLevels && saveData.completedLevels.length > 0;
 
-    // New game confirmation dialog
+    // New game — clear save and start immediately
     if (gs.confirmingNewGame) {
-      if (input.isConfirmPressed()) {
-        save.clearSave();
-        tutorial?.reset();
-        gs.confirmingNewGame = false;
-        cutscene.start('intro');
-        stateManager.transition(States.CUTSCENE);
-      } else if (input.isPausePressed()) {
-        gs.confirmingNewGame = false;
-      }
+      gs.confirmingNewGame = false;
+      save.clearSave();
+      tutorial?.reset();
+      cutscene.start('intro');
+      stateManager.transition(States.CUTSCENE);
       input.flush();
       return;
     }
@@ -861,20 +857,6 @@ function render(alpha) {
     }
 
     // New game confirmation dialog
-    if (gs.confirmingNewGame) {
-      ctx.fillStyle = '#fff';
-      ctx.font = '20px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('Start a new game?', sw / 2, sh / 2 - 10);
-      ctx.fillStyle = '#ff8844';
-      ctx.font = '16px sans-serif';
-      ctx.fillText('This will erase your current save data.', sw / 2, sh / 2 + 20);
-      ctx.fillStyle = '#ffcc00';
-      ctx.font = 'bold 18px sans-serif';
-      ctx.fillText('Enter to confirm   Esc to cancel', sw / 2, sh / 2 + 60);
-      return;
-    }
-
     // Title logo (600x600, centered)
     if (titleLogo.complete && titleLogo.naturalWidth > 0) {
       const logoSize = 600;
