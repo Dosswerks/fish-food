@@ -876,7 +876,7 @@ function render(alpha) {
     ctx.fillStyle = '#666';
     ctx.font = '13px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('Developer Note: To jump to a tank, add "?level=0" to the URL (0-12).', sw / 2, sh * 0.55 + menuLabels.length * 50 + 30);
+    ctx.fillText('Developer Note: To jump to a tank, add "index.html?level=0" to the URL (0-12).', sw / 2, sh * 0.55 + menuLabels.length * 50 + 30);
     // Version
     ctx.fillStyle = '#444';
     ctx.font = '11px sans-serif';
