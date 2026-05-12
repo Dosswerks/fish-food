@@ -105,6 +105,7 @@ export class AudioSystem {
 
   /**
    * Play a music file from a URL path (looped).
+   * Falls back to level-01 music if the file is not found.
    * @param {string} url - Path to the audio file
    */
   async playMusicFile(url) {
@@ -113,7 +114,12 @@ export class AudioSystem {
     try {
       const response = await fetch(url);
       if (!response.ok) {
-        console.warn(`AudioSystem: music file not found: ${url}`);
+        // Fallback to level-01 music
+        if (url !== 'src/assets/music/level-01.mp3') {
+          console.warn(`AudioSystem: music file not found: ${url}, falling back to level-01`);
+          return this.playMusicFile('src/assets/music/level-01.mp3');
+        }
+        console.warn(`AudioSystem: no music available`);
         return;
       }
       const arrayBuffer = await response.arrayBuffer();
@@ -126,7 +132,12 @@ export class AudioSystem {
       this._musicSource = source;
       this._currentMusic = url;
     } catch (e) {
-      console.warn(`AudioSystem: failed to play music file ${url}`, e);
+      // Fallback to level-01 music
+      if (url !== 'src/assets/music/level-01.mp3') {
+        console.warn(`AudioSystem: failed to play ${url}, falling back to level-01`);
+        return this.playMusicFile('src/assets/music/level-01.mp3');
+      }
+      console.warn(`AudioSystem: failed to play music`, e);
     }
   }
 
