@@ -3,6 +3,7 @@
   "world": 5,
   "worldName": "Living Room",
   "tankTheme": "living_room",
+  "musicFile": "src/assets/music/level-13.mp3",
   "narrativeDescription": "A cozy living room aquarium. Freedom is just beyond the glass!",
   "tankDimensions": {
     "width": 1280,

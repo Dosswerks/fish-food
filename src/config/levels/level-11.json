@@ -3,6 +3,7 @@
   "world": 4,
   "worldName": "Pet Store Tanks",
   "tankTheme": "petstore_2",
+  "musicFile": "src/assets/music/level-11.mp3",
   "narrativeDescription": "The predator tank. Multiple hunters patrol these waters.",
   "tankDimensions": {
     "width": 1280,

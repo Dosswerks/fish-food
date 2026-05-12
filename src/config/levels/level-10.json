@@ -3,6 +3,7 @@
   "world": 4,
   "worldName": "Pet Store Tanks",
   "tankTheme": "petstore_1",
+  "musicFile": "src/assets/music/level-10.mp3",
   "narrativeDescription": "A display tank in a busy pet store. Lots of activity here.",
   "tankDimensions": {
     "width": 1280,

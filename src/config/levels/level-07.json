@@ -3,6 +3,7 @@
   "world": 3,
   "worldName": "Neglected Tanks",
   "tankTheme": "neglected_1",
+  "musicFile": "src/assets/music/level-07.mp3",
   "narrativeDescription": "A murky, neglected tank. The water is cloudy and food rots quickly.",
   "tankDimensions": {
     "width": 1280,

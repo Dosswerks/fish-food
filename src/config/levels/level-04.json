@@ -3,6 +3,7 @@
   "world": 2,
   "worldName": "Salt Water",
   "tankTheme": "saltwater_1",
+  "musicFile": "src/assets/music/level-04.mp3",
   "narrativeDescription": "A saltwater reef tank. The colors are vivid but the fish are faster.",
   "tankDimensions": {
     "width": 1280,

@@ -3,6 +3,7 @@
   "world": 4,
   "worldName": "Pet Store Tanks",
   "tankTheme": "petstore_3",
+  "musicFile": "src/assets/music/level-12.mp3",
   "narrativeDescription": "The final pet store tank. Everything is thrown at you here.",
   "tankDimensions": {
     "width": 1280,

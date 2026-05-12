@@ -3,6 +3,7 @@
   "world": 1,
   "worldName": "Fresh Water",
   "tankTheme": "freshwater_3",
+  "musicFile": "src/assets/music/level-03.mp3",
   "narrativeDescription": "The biggest freshwater tank yet. Something lurks in the plants...",
   "tankDimensions": {
     "width": 1280,

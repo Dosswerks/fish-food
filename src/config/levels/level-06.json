@@ -3,6 +3,7 @@
   "world": 2,
   "worldName": "Salt Water",
   "tankTheme": "saltwater_3",
+  "musicFile": "src/assets/music/level-06.mp3",
   "narrativeDescription": "The final saltwater tank. A chase predator guards the exit.",
   "tankDimensions": {
     "width": 1280,

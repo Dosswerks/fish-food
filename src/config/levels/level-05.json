@@ -3,6 +3,7 @@
   "world": 2,
   "worldName": "Salt Water",
   "tankTheme": "saltwater_2",
+  "musicFile": "src/assets/music/level-05.mp3",
   "narrativeDescription": "A deeper saltwater tank with strong currents pushing through coral.",
   "tankDimensions": {
     "width": 1280,

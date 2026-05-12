@@ -3,6 +3,7 @@
   "world": 3,
   "worldName": "Neglected Tanks",
   "tankTheme": "neglected_3",
+  "musicFile": "src/assets/music/level-09.mp3",
   "narrativeDescription": "The worst tank yet. A filter drain creates a deadly suction zone.",
   "tankDimensions": {
     "width": 1280,
