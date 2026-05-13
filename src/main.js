@@ -52,6 +52,7 @@ const difficulty = new DifficultySystem();
 const analytics = new AnalyticsSystem(false);
 const cutscene = new CutscenePlayer();
 const audio = new AudioSystem();
+cutscene.setAudioSystem(audio);
 const animation = new AnimationSystem();
 const debug = new DebugOverlay();
 renderer.setAnimationSystem(animation);
@@ -1198,6 +1199,7 @@ stateManager.onTransition((oldState, newState) => {
   if (oldState === States.PAUSED && newState === States.PLAYING) { audio.unduckMusic(); }
   if (newState === States.MAIN_MENU) audio.stopMusic();
   if (newState === States.GAME_OVER) audio.stopMusic();
+  if (newState === States.CUTSCENE) audio.stopMusic();
   // Reset progress map timer when entering progress map
   if (newState === States.PROGRESS_MAP) { gs._progressMapTimer = 3.0; }
 });
