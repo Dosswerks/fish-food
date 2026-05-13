@@ -1,7 +1,7 @@
 /**
  * Cutscene player. Displays a sequence of frames with optional video and text.
  * Videos play in a centered "window" with text displayed below.
- * Supports skip input and crossfade transitions.
+ * User manually advances panels. Supports cutscene-level music and per-video audio.
  */
 
 /** Default cutscene data.
@@ -9,9 +9,13 @@
  *   bg: background color (used when no video, or as letterbox color)
  *   text: [line1, line2] — displayed below the video window
  *   video: path to MP4 file (optional) — plays in the centered window
+ *
+ * Each cutscene can have:
+ *   music: path to audio file that plays under all panels (looped)
  */
 export const CUTSCENES = {
   intro: {
+    music: null, // e.g. 'src/assets/music/intro.mp3'
     frames: [
       { bg: '#1a5a8a', text: ['In the big, big river, a little goldfish', 'swam happily with its family.'] },
       { bg: '#2a3a5a', video: 'src/assets/video/intro-02.mp4', text: ['One day, a net swept through the water...', 'and everything changed.'] },
@@ -20,6 +24,7 @@ export const CUTSCENES = {
     ],
   },
   ending: {
+    music: null, // e.g. 'src/assets/music/ending.mp3'
     frames: [
       { bg: '#1a5a8a', text: ['After a long journey through many tanks,', 'the goldfish could smell the ocean.'] },
       { bg: '#2a6a9a', text: ['With one final leap...', ''] },
@@ -33,14 +38,24 @@ export class CutscenePlayer {
   constructor() {
     this._frames = [];
     this._currentFrame = 0;
-    this._frameTimer = 0;
-    this._frameDuration = 4; // seconds per frame (non-video frames)
     this._fadeTimer = 0;
     this._fadeDuration = 0.5;
     this._fading = false;
     this._done = false;
     this._videoElement = null;
     this._videoReady = false;
+    this._videoSourceNode = null;
+    this._audioSystem = null;
+    this._cutsceneMusicSource = null;
+    this._cutsceneMusicBuffer = null;
+  }
+
+  /**
+   * Set the audio system reference for routing video/music audio.
+   * @param {AudioSystem} audioSystem
+   */
+  setAudioSystem(audioSystem) {
+    this._audioSystem = audioSystem;
   }
 
   /**
@@ -52,16 +67,17 @@ export class CutscenePlayer {
     if (!data) { this._done = true; return; }
     this._frames = data.frames;
     this._currentFrame = 0;
-    this._frameTimer = 0;
     this._fadeTimer = 0;
     this._fading = false;
     this._done = false;
     this._loadVideoForFrame(0);
+    this._startCutsceneMusic(data.music);
   }
 
   /** Skip the entire cutscene. */
   skip() {
     this._stopVideo();
+    this._stopCutsceneMusic();
     this._done = true;
   }
 
@@ -71,20 +87,20 @@ export class CutscenePlayer {
   /**
    * Update cutscene timing.
    * @param {number} dt - Delta time in seconds
-   * @param {boolean} skipPressed - Whether skip input was pressed
+   * @param {boolean} advancePressed - Whether the user pressed to advance/skip
    */
-  update(dt, skipPressed) {
+  update(dt, advancePressed) {
     if (this._done) return;
-    if (skipPressed) { this.skip(); return; }
 
+    // Handle crossfade transition
     if (this._fading) {
       this._fadeTimer += dt;
       if (this._fadeTimer >= this._fadeDuration) {
         this._fading = false;
         this._stopVideo();
         this._currentFrame++;
-        this._frameTimer = 0;
         if (this._currentFrame >= this._frames.length) {
+          this._stopCutsceneMusic();
           this._done = true;
         } else {
           this._loadVideoForFrame(this._currentFrame);
@@ -93,25 +109,8 @@ export class CutscenePlayer {
       return;
     }
 
-    this._frameTimer += dt;
-
-    // For video frames, wait for video to end (or use frameDuration as fallback)
-    const frame = this._frames[this._currentFrame];
-    const hasVideo = frame && frame.video && this._videoElement;
-    let shouldAdvance = false;
-
-    if (hasVideo && this._videoReady) {
-      // Advance when video ends, or after frameDuration as safety
-      if (this._videoElement.ended || this._frameTimer >= Math.max(this._frameDuration, this._videoElement.duration || 99)) {
-        shouldAdvance = true;
-      }
-    } else {
-      if (this._frameTimer >= this._frameDuration) {
-        shouldAdvance = true;
-      }
-    }
-
-    if (shouldAdvance) {
+    // User advances to next panel
+    if (advancePressed) {
       this._fading = true;
       this._fadeTimer = 0;
     }
@@ -119,7 +118,7 @@ export class CutscenePlayer {
 
   /**
    * Render the current cutscene frame.
-   * Layout: video window centered in upper 65%, text below.
+   * Layout: video window centered in upper portion, text below.
    */
   render(ctx, canvasW, canvasH) {
     if (this._done || this._frames.length === 0) return;
@@ -160,7 +159,7 @@ export class CutscenePlayer {
       ctx.strokeRect(drawX, drawY, drawW, drawH);
     }
 
-    // Text — larger, positioned below video window
+    // Text — larger, positioned below video window (or centered if no video)
     const textY = frame.video ? sh * 0.75 : sh * 0.45;
     ctx.fillStyle = '#fff';
     ctx.font = 'bold 28px sans-serif';
@@ -180,11 +179,17 @@ export class CutscenePlayer {
       ctx.globalAlpha = 1.0;
     }
 
-    // Skip hint
-    ctx.fillStyle = '#666';
-    ctx.font = '13px sans-serif';
+    // Advance hint
+    ctx.fillStyle = '#888';
+    ctx.font = '14px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Press Space to continue', sw / 2, sh - 25);
+
+    // Panel indicator
+    ctx.fillStyle = '#555';
+    ctx.font = '12px sans-serif';
     ctx.textAlign = 'right';
-    ctx.fillText('Press Space to skip', sw - 20, sh - 20);
+    ctx.fillText(`${this._currentFrame + 1} / ${this._frames.length}`, sw - 20, sh - 25);
   }
 
   /** Load video for a frame if it has one. */
@@ -195,15 +200,20 @@ export class CutscenePlayer {
 
     const video = document.createElement('video');
     video.src = frame.video;
-    video.muted = true; // cutscene audio handled separately if needed
     video.playsInline = true;
     video.preload = 'auto';
+    video.loop = true; // loop while user is on this panel
     this._videoElement = video;
     this._videoReady = false;
 
+    // Route video audio through the game's audio system
+    if (this._audioSystem) {
+      this._videoSourceNode = this._audioSystem.connectMediaElement(video);
+    }
+
     video.addEventListener('canplay', () => {
       this._videoReady = true;
-      video.play().catch(() => { /* autoplay blocked, still show frame */ });
+      video.play().catch(() => { /* autoplay blocked */ });
     }, { once: true });
 
     video.addEventListener('error', () => {
@@ -222,6 +232,45 @@ export class CutscenePlayer {
       this._videoElement.load(); // release resources
       this._videoElement = null;
       this._videoReady = false;
+      this._videoSourceNode = null;
+    }
+  }
+
+  /** Start cutscene background music (looped, routed through music gain). */
+  async _startCutsceneMusic(musicPath) {
+    this._stopCutsceneMusic();
+    if (!musicPath || !this._audioSystem) return;
+
+    const ctx = this._audioSystem.getContext();
+    const musicGain = this._audioSystem.getMusicGain();
+    if (!ctx || !musicGain) return;
+
+    try {
+      const response = await fetch(musicPath);
+      if (!response.ok) {
+        console.warn(`Cutscene music not found: ${musicPath}`);
+        return;
+      }
+      const arrayBuffer = await response.arrayBuffer();
+      const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+      const source = ctx.createBufferSource();
+      source.buffer = audioBuffer;
+      source.loop = true;
+      source.connect(musicGain);
+      source.start(0);
+      this._cutsceneMusicSource = source;
+    } catch (e) {
+      console.warn(`Cutscene music failed to load: ${musicPath}`, e);
+    }
+  }
+
+  /** Stop cutscene background music. */
+  _stopCutsceneMusic() {
+    if (this._cutsceneMusicSource) {
+      try {
+        this._cutsceneMusicSource.stop();
+      } catch (e) { /* already stopped */ }
+      this._cutsceneMusicSource = null;
     }
   }
 }
