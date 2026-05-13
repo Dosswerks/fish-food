@@ -207,6 +207,41 @@ export class AudioSystem {
     this._musicGain.gain.setValueAtTime(this._volumes.music, this._ctx.currentTime);
   }
 
+  /**
+   * Connect a video/audio element to the SFX gain node so its audio
+   * respects master and SFX volume controls.
+   * @param {HTMLMediaElement} mediaElement - Video or audio element
+   * @returns {MediaElementAudioSourceNode|null} The source node (caller should keep reference)
+   */
+  connectMediaElement(mediaElement) {
+    if (!this._ensureContext()) return null;
+    try {
+      const source = this._ctx.createMediaElementSource(mediaElement);
+      source.connect(this._sfxGain);
+      return source;
+    } catch (e) {
+      console.warn('AudioSystem: failed to connect media element', e);
+      return null;
+    }
+  }
+
+  /**
+   * Get the AudioContext (for external use like cutscene music).
+   * @returns {AudioContext|null}
+   */
+  getContext() {
+    this._ensureContext();
+    return this._ctx;
+  }
+
+  /**
+   * Get the music gain node (for routing cutscene music).
+   * @returns {GainNode|null}
+   */
+  getMusicGain() {
+    return this._musicGain;
+  }
+
   /** Apply settings from settings menu. */
   applySettings(settings) {
     this.setMasterVolume(settings.masterVolume);
